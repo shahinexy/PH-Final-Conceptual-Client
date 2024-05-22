@@ -5,19 +5,21 @@ import Heading from '../Shared/Heading'
 import LoadingSpinner from '../Shared/LoadingSpinner'
 import { useQuery } from '@tanstack/react-query'
 import useAxiosCommone from '../../hooks/useAxiosCommone'
+import { useSearchParams } from 'react-router-dom'
 
 const Rooms = () => {
   const axiosCommone = useAxiosCommone()
-
+  const [params, setParams] = useSearchParams()
+  const category = params.get('category')
+  
   const {data, isLoading } = useQuery({
-    queryKey: ['rooms'],
+    queryKey: ['rooms', category],
     queryFn: async () =>{
-      const res = await axiosCommone.get('/rooms')
+      const res = await axiosCommone.get(`/rooms/?category=${category}`)
       return res.data;
     }
   })
 
-  console.log(data);
 
   if (isLoading) return <LoadingSpinner />
 
