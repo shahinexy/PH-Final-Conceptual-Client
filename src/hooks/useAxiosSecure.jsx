@@ -4,7 +4,7 @@ import useAuth from './useAuth'
 import { useNavigate } from 'react-router-dom'
 
 export const axiosSecure = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: 'http://localhost:8000',
   withCredentials: true,
 })
 const useAxiosSecure = () => {
@@ -26,7 +26,7 @@ const useAxiosSecure = () => {
     )
   }, [logOut, navigate])
 
-  return axiosSecure
+  return axiosSecure;
 }
 
 export default useAxiosSecure

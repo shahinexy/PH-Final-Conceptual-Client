@@ -1,30 +1,31 @@
-import { useEffect, useState } from 'react'
+
 import Card from './Card'
 import Container from '../Shared/Container'
 import Heading from '../Shared/Heading'
 import LoadingSpinner from '../Shared/LoadingSpinner'
+import { useQuery } from '@tanstack/react-query'
+import useAxiosCommone from '../../hooks/useAxiosCommone'
 
 const Rooms = () => {
-  const [rooms, setRooms] = useState([])
-  const [loading, setLoading] = useState(false)
+  const axiosCommone = useAxiosCommone()
 
-  useEffect(() => {
-    setLoading(true)
-    fetch(`./rooms.json`)
-      .then(res => res.json())
-      .then(data => {
-        setRooms(data)
-        setLoading(false)
-      })
-  }, [])
+  const {data, isLoading } = useQuery({
+    queryKey: ['rooms'],
+    queryFn: async () =>{
+      const res = await axiosCommone.get('/rooms')
+      return res.data;
+    }
+  })
 
-  if (loading) return <LoadingSpinner />
+  console.log(data);
+
+  if (isLoading) return <LoadingSpinner />
 
   return (
     <Container>
-      {rooms && rooms.length > 0 ? (
+      {data && data.length > 0 ? (
         <div className='pt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-8'>
-          {rooms.map(room => (
+          {data.map(room => (
             <Card key={room._id} room={room} />
           ))}
         </div>
