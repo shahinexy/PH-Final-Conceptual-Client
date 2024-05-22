@@ -1,7 +1,42 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FcGoogle } from 'react-icons/fc'
+import axios from 'axios'
+import useAuth from '../../hooks/useAuth'
+import toast from 'react-hot-toast'
 
 const SignUp = () => {
+  const {createUser, signInWithGoogle,updateUserProfile, setLoading,loading} = useAuth()
+  const navigate = useNavigate()
+
+  const handleSubmit = async e =>{
+    e.preventDefault()
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const image = form.image.files[0]
+    const formData = new FormData()
+    formData.append("image",image)
+
+    try{
+      const {data} = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_ATI_KEY}`, formData);
+    console.log(data.data.display_url);
+
+    const result = await createUser(email, password)
+    console.log(result);
+
+    const updateUser = await updateUserProfile(name, data.data.display_url)
+
+    navigate('/')
+    toast.success('Sign Up success')
+    }    
+    catch(err){
+      console.log(err);
+      toast.err(err.message)
+    }
+
+  }
+
   return (
     <div className='flex justify-center items-center min-h-screen'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
@@ -10,8 +45,7 @@ const SignUp = () => {
           <p className='text-sm text-gray-400'>Welcome to StayVista</p>
         </div>
         <form
-          noValidate=''
-          action=''
+          onSubmit={handleSubmit}
           className='space-y-6 ng-untouched ng-pristine ng-valid'
         >
           <div className='space-y-4'>
